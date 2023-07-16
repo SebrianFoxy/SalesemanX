@@ -1,18 +1,35 @@
 part of 'user_login_bloc.dart';
 
-@immutable
-abstract class UserLoginState {}
+class UserLoginState extends Equatable {
+  final String email;
+  bool get isValidEmail {
+    final emailRegex = RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
+    return emailRegex.hasMatch(email);
+  }
 
-class UserLoginInitial extends UserLoginState {}
+  final String password;
+  bool get isValidfirstPassword => password.length >= 6;
 
-class UserLoginAuthenticationState extends UserLoginState{}
+  final FormSubmissionStatus formStatus;
 
-class UserLoginAuthenticationLoadingState extends UserLoginState {}
+  const UserLoginState ({
+    this.email = '',
+    this.password = '',
+    this.formStatus = const InitialFormStatus(),
+  });
 
-class UserLoginAuthenticationFailedState extends UserLoginState {}
+  UserLoginState copyWith({
+    String? email,
+    String? password,
+    FormSubmissionStatus? formStatus,
+  }){
+    return UserLoginState(
+      email: email ?? this.email,
+      password: password ?? this.password,
+      formStatus: formStatus ?? this.formStatus,
+    );
+  }
 
-class UserLoginAuthenticationFailureState extends UserLoginState {
-  final String error;
-
-  UserLoginAuthenticationFailureState({required this.error});
+  @override
+  List<Object> get props => [email, password, formStatus];
 }

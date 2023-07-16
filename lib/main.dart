@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:super_saler/ui/%D0%A1ompany.dart';
 import 'package:super_saler/ui/Login.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:super_saler/ui/Registration.dart';
@@ -7,6 +8,7 @@ import 'bloc/UserRegistration/user_registration_bloc.dart';
 
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
@@ -31,7 +33,8 @@ class MyApp extends StatelessWidget {
         initialRoute: '/login',
         routes: {
           '/login': (context) => LoginPage(),
-          '/registration': (context) => RegistrationPage(),
+          '/registration': (context) => const RegistrationPage(),
+          '/company': (context) => const CompanyPage(),
         },
         home: LoginPage(),
       ),

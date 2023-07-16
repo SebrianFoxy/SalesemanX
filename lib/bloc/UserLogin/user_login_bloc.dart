@@ -1,36 +1,51 @@
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:super_saler/Auth/auth.dart';
+import 'form_sumbission_status.dart';
+
 
 part 'user_login_event.dart';
 part 'user_login_state.dart';
 
 class UserLoginBloc extends Bloc<UserLoginEvent, UserLoginState> {
-  UserLoginBloc() : super(UserLoginInitial()){
+  UserLoginBloc() : super(const UserLoginState()){
     on<SignInButtonPressedEvent>(_onLogin);
-    on<ResetUserLoginEvent>(_onReset);
+    on<EmailChanged>(_emailChanged);
+    on<PasswordChanged>(_passwordChanged);
+  }
+
+  _emailChanged(EmailChanged event, Emitter<UserLoginState> emit) {
+    emit(state.copyWith(email: event.email));
+  }
+
+  _passwordChanged(PasswordChanged event, Emitter<UserLoginState> emit){
+    emit(state.copyWith(password: event.password));
   }
 
   _onLogin(SignInButtonPressedEvent event, Emitter<UserLoginState> emit) async {
-    emit(UserLoginAuthenticationLoadingState());
+    emit(state.copyWith(formStatus: FormSubmitting()));
 
     try{
-      bool authenticated = await login(event.email, event.password);
-      if (authenticated) {
-        emit(UserLoginAuthenticationState());
-      } else {
-        emit(UserLoginAuthenticationFailedState());
+      bool loginUser = await login(event.email, event.password);
+      if (loginUser){
+        emit(state.copyWith(formStatus: SubmissionSuccess()));
+      }
+      else {
+        emit(state.copyWith(formStatus: SubmissionFailure()));
+        emit(state.copyWith(formStatus: const InitialFormStatus()));
       }
     }catch(error){
-      emit(UserLoginAuthenticationFailureState(error: error.toString()));
+      emit(state.copyWith(formStatus: SubmissionFailed(error)));
     }
   }
 
-  _onReset(
-    ResetUserLoginEvent event,
-    Emitter<UserLoginState> emit,
-  ) {
-    emit(UserLoginInitial());
-  }
+  // _onReset(
+  //   ResetUserLoginEvent event,
+  //   Emitter<UserLoginState> emit,
+  // ) {
+  //   emit(UserLoginInitial());
+  // }
   
 }
